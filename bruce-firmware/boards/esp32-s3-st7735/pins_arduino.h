@@ -22,8 +22,8 @@
 // #define ST7735_DRIVER // Já foi definido
 // #define TFT_WIDTH 128
 // #define TFT_HEIGHT 160
- #define ST7735_BLACKTAB
-// #define TFT_RGB_ORDER TFT_BGR // Colour order Blue-Green-Red
+ //#define ST7735_redTAB
+#define TFT_RGB_ORDER TFT_BGR
 #define TFT_BACKLIGHT_ON HIGH
 #define TFT_BL 4
 #define TFT_CS 16
