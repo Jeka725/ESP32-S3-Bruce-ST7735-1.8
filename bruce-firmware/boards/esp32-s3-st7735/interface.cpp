@@ -9,11 +9,9 @@
 // ======================================================
 //          SETTINGS
 // ======================================================
-const int center = 2048;                    // Center of the joystick (ADC 12 bits = 0-4095)
-const int deadzone = 400;                   // Dead zone
 const unsigned long readDelay = 20;         // Time between readings
-const unsigned long firstRepeatDelay = 400; // initial joystick wait
-const unsigned long repeatDelay = 200;      // Continuous repetition of the joystick
+const unsigned long firstRepeatDelay = 400; // initial button wait
+const unsigned long repeatDelay = 200;      // Continuous repetition of the button
 const unsigned long debounceDelay = 50;     // Debounce button
 
 // ======================================================
@@ -22,11 +20,17 @@ const unsigned long debounceDelay = 50;     // Debounce button
 #ifndef SEL_BTN
 #define SEL_BTN 14
 #endif
-#ifndef JOY_X
-#define JOY_X 12
+#ifndef BTN_LEFT
+#define BTN_LEFT 12
 #endif
-#ifndef JOY_Y
-#define JOY_Y 13
+#ifndef BTN_RIGHT
+#define BTN_RIGHT 13
+#endif
+#ifndef BTN_UP
+#define BTN_UP 9
+#endif
+#ifndef BTN_DOWN
+#define BTN_DOWN 11
 #endif
 #ifndef TFT_BL
 #define TFT_BL 4
@@ -42,7 +46,7 @@ volatile bool rightPress_flag = false;
 volatile bool slPress_flag = false;
 
 // ======================================================
-//          JOYSTICK CONTROLLER
+//          DIRECTION CONTROLLER
 // ======================================================
 enum JoyDirection { JOY_NONE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN };
 JoyDirection currentDirection = JOY_NONE;
@@ -61,13 +65,11 @@ unsigned long lastDebounceTime = 0;
 // SETUP GPIO
 // ======================================================
 void _setup_gpio() {
-    pinMode(SEL_BTN, INPUT_PULLUP); // button
-    pinMode(JOY_X, INPUT);          // Analog X
-    pinMode(JOY_Y, INPUT);          // Analog Y
-
-    analogReadResolution(12);
-
-    analogSetAttenuation(ADC_11db); // Improves ADC stability.
+    pinMode(SEL_BTN, INPUT_PULLUP);
+    pinMode(BTN_LEFT, INPUT_PULLUP);
+    pinMode(BTN_RIGHT, INPUT_PULLUP);
+    pinMode(BTN_UP, INPUT_PULLUP);
+    pinMode(BTN_DOWN, INPUT_PULLUP);
 
     pinMode(TFT_BL, OUTPUT);    // Backlight OUTPUT
     digitalWrite(TFT_BL, HIGH); // Backlight HIGHT
@@ -91,26 +93,13 @@ int getBattery() { return Battery_information::getBatteryPercentage(); }
 void _setBrightness(uint8_t brightval) { analogWrite(TFT_BL, brightval); }
 
 // ======================================================
-//          ADC Smoothed Reading
-// ======================================================
-int smoothAnalogRead(uint8_t pin) {
-    long total = 0;
-    for (int i = 0; i < 4; i++) { total += analogRead(pin); }
-    return total / 4;
-}
-
-// ======================================================
-//          Joystick Direction Detection
+//          Direction Buttons Reading
 // ======================================================
 JoyDirection readJoystickDirection() {
-    int x = smoothAnalogRead(JOY_X);
-    int y = smoothAnalogRead(JOY_Y);
-
-    if (x < center - deadzone) { return JOY_RIGHT; } // X-axis
-    if (x > center + deadzone) { return JOY_LEFT; }  // X-axis
-
-    if (y < center - deadzone) { return JOY_DOWN; } // Y-axis
-    if (y > center + deadzone) { return JOY_UP; }   // Y-axis
+    if (digitalRead(BTN_LEFT) == LOW) { return JOY_LEFT; }
+    if (digitalRead(BTN_RIGHT) == LOW) { return JOY_RIGHT; }
+    if (digitalRead(BTN_UP) == LOW) { return JOY_UP; }
+    if (digitalRead(BTN_DOWN) == LOW) { return JOY_DOWN; }
     return JOY_NONE;
 }
 
@@ -162,7 +151,7 @@ void InputHandler(void) {
     lastReadTime = now;
 
     // ==================================================
-    // JOYSTICK
+    // DIRECTION BUTTONS
     // ==================================================
     JoyDirection newDirection = readJoystickDirection();
     if (newDirection != currentDirection) {
