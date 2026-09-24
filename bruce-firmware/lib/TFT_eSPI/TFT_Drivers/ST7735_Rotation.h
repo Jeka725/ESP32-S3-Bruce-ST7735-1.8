@@ -1,5 +1,6 @@
 
 // This is the command sequence that rotates the ST7735 driver coordinate frame
+// Custom ST7735S panel correction: horizontal mirror is corrected in every rotation.
 
 rotation = m % 4; // Limit the range of values to 0-3
 
@@ -13,7 +14,7 @@ switch (rotation) {
             colstart = 2;
             rowstart = 1;
         } else if (tabcolor == INITR_GREENTAB3) {
-            writedata(TFT_MAD_MX | TFT_MAD_MY | TFT_MAD_BGR);
+            writedata(TFT_MAD_MY | TFT_MAD_BGR);
             // colstart = 2; // VHNF-original
             // rowstart = 3; // VHNF-original
             colstart = 0; // VHNF-alt
@@ -46,7 +47,7 @@ switch (rotation) {
             colstart = 1;
             rowstart = 2;
         } else if (tabcolor == INITR_GREENTAB3) {
-            writedata(TFT_MAD_MY | TFT_MAD_MV | TFT_MAD_BGR);
+            writedata(TFT_MAD_MV | TFT_MAD_BGR);
             // colstart = 2; // VHNF-original
             // rowstart = 3; // VHNF-original
             colstart = 0; // VHNF-alt
@@ -79,7 +80,7 @@ switch (rotation) {
             colstart = 2;
             rowstart = 1;
         } else if (tabcolor == INITR_GREENTAB3) {
-            writedata(TFT_MAD_BGR);
+            writedata(TFT_MAD_MX | TFT_MAD_BGR);
             // colstart = 2; // VHNF-original
             // rowstart = 3; // VHNF-original
             colstart = 0; // VHNF-alt
@@ -112,7 +113,7 @@ switch (rotation) {
             colstart = 1;
             rowstart = 2;
         } else if (tabcolor == INITR_GREENTAB3) {
-            writedata(TFT_MAD_MX | TFT_MAD_MV | TFT_MAD_BGR);
+            writedata(TFT_MAD_MX | TFT_MAD_MY | TFT_MAD_MV | TFT_MAD_BGR);
             // colstart = 2; // VHNF-original
             // rowstart = 3; // VHNF-original
             colstart = 0; // VHNF-alt
